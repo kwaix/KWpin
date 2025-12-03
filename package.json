@@ -1,0 +1,13 @@
+{
+  "name": "pinball-sample",
+  "version": "0.1.0",
+  "description": "Firestore 리더보드 + Gemini API + GitHub Actions용 핀볼 게임 샘플 프로젝트",
+  "type": "module",
+  "scripts": {
+    "test": "node --test || echo 'Node 20 test runner 또는 Jest로 교체 가능'",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

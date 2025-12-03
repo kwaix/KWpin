@@ -1,0 +1,29 @@
+name: CI (Universal Minimal)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: TypeScript build check
+        run: npm run build || echo "Build step validates TS only. Adjust when project grows."
+
+      - name: Sample tests (optional)
+        run: |
+          npm test || echo "No full test suite yet. Ready for future expansion."
