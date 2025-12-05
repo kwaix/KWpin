@@ -6,7 +6,7 @@ import { suggestTipFromGameState } from "../../src/services/geminiService";
 
 describe("geminiService (mocked)", () => {
   test("suggestTipFromGameState returns a string", async () => {
-    const tip = await suggestTipFromGameState({ dummy: true });
+    const tip = await suggestTipFromGameState({ dummy: true } as any);
     expect(typeof tip).toBe("string");
     expect(tip.length).toBeGreaterThan(0);
   });

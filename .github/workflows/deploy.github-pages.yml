@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Config
+        run: |
+          mkdir -p public
+          echo "window.FIREBASE_CONFIG = {" > public/config.js
+          echo "  apiKey: '${{ secrets.FIREBASE_API_KEY }}'," >> public/config.js
+          echo "  authDomain: '${{ secrets.FIREBASE_AUTH_DOMAIN }}'," >> public/config.js
+          echo "  projectId: '${{ secrets.FIREBASE_PROJECT_ID }}'" >> public/config.js
+          echo "};" >> public/config.js
+
+      - name: Build
+        run: |
+          npm run build
+          mkdir -p dist
+          cp index.html dist/
+          # Copy contents of public to root of dist
+          cp -r public/* dist/
+          cp -r build dist/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

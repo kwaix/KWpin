@@ -5,9 +5,36 @@
 
 import { initFirestore, fetchLeaderboard, submitScore } from "../../src/services/firestoreService";
 
+// Mock firebase modules
+jest.mock("firebase/app", () => ({
+  initializeApp: jest.fn(() => ({})),
+}));
+
+jest.mock("firebase/firestore", () => ({
+  getFirestore: jest.fn(() => ({})),
+  collection: jest.fn(),
+  query: jest.fn(),
+  orderBy: jest.fn(),
+  limit: jest.fn(),
+  getDocs: jest.fn(async () => ({
+    docs: [
+      {
+        id: "1",
+        data: () => ({ name: "MockUser", score: 1000, createdAt: { toDate: () => new Date() } }),
+      },
+    ],
+  })),
+  addDoc: jest.fn(async () => {}),
+  serverTimestamp: jest.fn(),
+}));
+
 describe("firestoreService (mocked implementation)", () => {
   beforeEach(() => {
-    initFirestore({ projectId: "test-project" });
+    initFirestore({
+      projectId: "test-project",
+      apiKey: "test-key",
+      authDomain: "test-domain"
+    });
   });
 
   test("fetchLeaderboard returns mock data", async () => {
