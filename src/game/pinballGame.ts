@@ -3,8 +3,8 @@
 // - PhysicsEngine, Renderer를 조합
 // - 외부에서 onScoreChange, onGameOver 콜백을 주입받아 UI/서비스와 분리
 
-import { PhysicsEngine, type Ball } from "./physics";
-import { Renderer, type Flipper, type RenderState } from "./renderer";
+import { PhysicsEngine, type Ball } from "./physics.js";
+import { Renderer, type Flipper, type RenderState } from "./renderer.js";
 
 export interface GameState {
   ball: Ball;
@@ -12,6 +12,7 @@ export interface GameState {
 }
 
 export interface PinballGameOptions {
+  ballImage?: HTMLImageElement;
   onScoreChange?: (score: number) => void;
   onGameOver?: (finalScore: number, gameState: GameState) => void | Promise<void>;
 }
@@ -27,9 +28,9 @@ export class PinballGame {
   running: boolean;
   state: GameState;
 
-  constructor(canvas: HTMLCanvasElement, { onScoreChange, onGameOver }: PinballGameOptions) {
+  constructor(canvas: HTMLCanvasElement, { ballImage, onScoreChange, onGameOver }: PinballGameOptions) {
     this.canvas = canvas;
-    this.renderer = new Renderer(canvas);
+    this.renderer = new Renderer(canvas, ballImage);
     this.physics = new PhysicsEngine({
       width: canvas.width,
       height: canvas.height,

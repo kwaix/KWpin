@@ -3,7 +3,7 @@
 // - 게임 상태를 받아 캔버스에 그리는 역할만 수행
 // - 외부 API나 DOM 접근 없이 순수 렌더링에 집중
 
-import type { Ball } from "./physics";
+import type { Ball } from "./physics.js";
 
 export interface Flipper {
   x: number;
@@ -22,9 +22,11 @@ export interface RenderState {
 export class Renderer {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  ballImage: HTMLImageElement | null;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, ballImage?: HTMLImageElement) {
     this.canvas = canvas;
+    this.ballImage = ballImage || null;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       throw new Error("2D context를 가져올 수 없습니다.");
@@ -38,10 +40,25 @@ export class Renderer {
   }
 
   drawBall(ball: Ball) {
-    this.ctx.beginPath();
-    this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    this.ctx.fillStyle = "#0f9";
-    this.ctx.fill();
+    if (this.ballImage && this.ballImage.complete && this.ballImage.naturalWidth > 0) {
+      this.ctx.save();
+      this.ctx.translate(ball.x, ball.y);
+      // 이미지가 원형으로 보일 수 있게 클리핑하거나, 그냥 이미지를 그립니다.
+      // 여기서는 이미지를 공 크기에 맞춰 그립니다.
+      this.ctx.drawImage(
+        this.ballImage,
+        -ball.radius,
+        -ball.radius,
+        ball.radius * 2,
+        ball.radius * 2
+      );
+      this.ctx.restore();
+    } else {
+      this.ctx.beginPath();
+      this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      this.ctx.fillStyle = "#0f9";
+      this.ctx.fill();
+    }
   }
 
   drawFlipper(flipper: Flipper) {
